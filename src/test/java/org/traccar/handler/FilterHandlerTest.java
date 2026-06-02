@@ -99,4 +99,39 @@ public class FilterHandlerTest extends BaseTest {
 
     }
 
+    @Test
+    public void testSkipAttributesOnChange() {
+        var device = mock(Device.class);
+        when(device.getAttributes()).thenReturn(new HashMap<>());
+        var config = mock(Config.class);
+        when(config.getString(Keys.FILTER_DISTANCE.getKey())).thenReturn("10");
+        when(config.getString(Keys.FILTER_SKIP_ATTRIBUTES_ENABLE.getKey())).thenReturn("true");
+        when(config.getString(Keys.FILTER_SKIP_ATTRIBUTES_ON_CHANGE.getKey())).thenReturn("ignition");
+        var cacheManager = mock(CacheManager.class);
+        when(cacheManager.getConfig()).thenReturn(config);
+        when(cacheManager.getObject(any(), anyLong())).thenReturn(device);
+
+        Position last = createPosition(new Date(System.currentTimeMillis() - 60000), true, 0);
+        last.set(Position.KEY_IGNITION, true);
+        when(cacheManager.getPosition(anyLong())).thenReturn(last);
+
+        var handler = new FilterHandler(cacheManager, null);
+
+        // ignition unchanged (true -> true): distance filter still applies, position is filtered
+        Position position = createPosition(new Date(), true, 0);
+        position.set(Position.KEY_IGNITION, true);
+        assertTrue(handler.filter(position));
+
+        // ignition changed (true -> false): bypass kicks in, position is NOT filtered
+        position = createPosition(new Date(), true, 0);
+        position.set(Position.KEY_IGNITION, false);
+        assertFalse(handler.filter(position));
+
+        // no last position: attribute present = bypass, position is NOT filtered
+        when(cacheManager.getPosition(anyLong())).thenReturn(null);
+        position = createPosition(new Date(), true, 0);
+        position.set(Position.KEY_IGNITION, true);
+        assertFalse(handler.filter(position));
+    }
+
 }

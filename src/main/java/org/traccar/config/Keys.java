@@ -1725,6 +1725,17 @@ public final class Keys {
             "");
 
     /**
+     * Attribute skipping can be enabled in the config or device attributes.
+     * If position contains any attribute mentioned in "filter.skipAttributesOnChange" config key,
+     * and the value of the attribute has changed compared to the last stored position,
+     * then position is not filtered out.
+     */
+    public static final ConfigKey<String> FILTER_SKIP_ATTRIBUTES_ON_CHANGE = new StringConfigKey(
+            "filter.skipAttributesOnChange",
+            List.of(KeyType.CONFIG, KeyType.DEVICE),
+            "");
+
+    /**
      * Override device time. Possible values are 'deviceTime' and 'serverTime'
      */
     public static final ConfigKey<String> TIME_OVERRIDE = new StringConfigKey(
