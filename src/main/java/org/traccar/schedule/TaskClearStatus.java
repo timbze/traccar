@@ -17,6 +17,8 @@ package org.traccar.schedule;
 
 import jakarta.inject.Inject;
 import org.traccar.broadcast.BroadcastService;
+import org.traccar.config.Config;
+import org.traccar.config.Keys;
 import org.traccar.helper.model.DeviceUtil;
 import org.traccar.storage.Storage;
 import org.traccar.storage.StorageException;
@@ -26,8 +28,8 @@ import java.util.concurrent.ScheduledExecutorService;
 public class TaskClearStatus implements ScheduleTask {
 
     @Inject
-    public TaskClearStatus(BroadcastService broadcastService, Storage storage) throws StorageException {
-        if (broadcastService.singleInstance()) {
+    public TaskClearStatus(Config config, BroadcastService broadcastService, Storage storage) throws StorageException {
+        if (!config.getBoolean(Keys.STATUS_USE_PREVIOUS_STATUS_ON_STARTUP) && broadcastService.singleInstance()) {
             DeviceUtil.resetStatus(storage);
         }
     }

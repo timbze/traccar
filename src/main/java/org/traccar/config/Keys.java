@@ -883,6 +883,13 @@ public final class Keys {
             600L);
 
     /**
+     * Do not update device status to offline on startup, use the previous status instead.
+     */
+    public static final ConfigKey<Boolean> STATUS_USE_PREVIOUS_STATUS_ON_STARTUP = new BooleanConfigKey(
+            "status.usePreviousStatusOnStartup",
+            List.of(KeyType.CONFIG));
+
+    /**
      * List of protocol names to ignore offline status. Can be useful to not trigger status change when devices are
      * configured to disconnect after reporting a batch of data.
      */
